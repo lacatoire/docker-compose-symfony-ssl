@@ -1,13 +1,11 @@
-# Symfony MySQL Docker-Compose with SSL
+# ⚡ Symfony MySQL Docker-Compose with SSL 🐳🔒
 
-This repository demonstrates a project setup using Docker Compose, Symfony, and MySQL with SSL/TLS connection.
-
+This repository demonstrates a project setup using `Docker Compose`, `Symfony`, and `MySQL` with SSL/TLS connection support for secure database interactions.
 ## Prerequisites
 
 Before running the project, ensure that you have the following installed:
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
-- [Git](https://git-scm.com/)
 
 ## Project Structure
 
@@ -25,7 +23,7 @@ Before running the project, ensure that you have the following installed:
 └── README.md               # Project documentation
 ```
 
-## Getting Started
+## ⚙️ Getting Started
 ### 1. Clone the repository
 
 ```bash
@@ -50,20 +48,20 @@ docker run -it --rm -v "C:\your_path\certs:/certs" docker-openssl
 # For Docker Toolbox (Windows Home/linux/mac)
 docker run -it --rm -v "$YOUR_PATH/certs:/certs" docker-openssl
 ```
+And then once connected
 ```bash
-
-    mkdir -p certs
-    cd certs
+mkdir -p certs
+cd certs
     
-    # Generate private key
-    openssl genrsa 2048 > server-key.pem
+# Generate private key
+openssl genrsa 2048 > server-key.pem
     
-    # Generate Certificate Authority (CA) certificate
-    openssl req -new -x509 -nodes -days 3650 -key server-key.pem -out ca-cert.pem
+# Generate Certificate Authority (CA) certificate
+openssl req -new -x509 -nodes -days 3650 -key server-key.pem -out ca-cert.pem
     
-    # Generate server certificate
-    openssl req -new -key server-key.pem -out server-cert.csr
-    openssl x509 -req -in server-cert.csr -CA ca-cert.pem -CAkey server-key.pem -CAcreateserial -out server-cert.pem -days 3650
+# Generate server certificate
+openssl req -new -key server-key.pem -out server-cert.csr
+openssl x509 -req -in server-cert.csr -CA ca-cert.pem -CAkey server-key.pem -CAcreateserial -out server-cert.pem -days 3650
 ```
 
 ### 3. Configure the environment
@@ -71,14 +69,14 @@ docker run -it --rm -v "$YOUR_PATH/certs:/certs" docker-openssl
 Edit the .env file in the Symfony project directory to set the database connection details `SSL Mode`
 
 ```bash
-  DATABASE_URL="mysql://db_user:db_password@database_app:3306/db_name?sslmode=required"
+DATABASE_URL="mysql://db_user:db_password@database_app:3306/db_name?sslmode=required"
 ```
 ### 4. Set up the Docker environment
 
 Run the following command to build and start the containers:
 
 ```bash
-  docker-compose up --build
+docker-compose up --build
 ```
 This will:
 
