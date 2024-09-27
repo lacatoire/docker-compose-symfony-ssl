@@ -16,7 +16,7 @@ Before running the project, ensure that you have the following installed:
 │   ├── .env                # Symfony environment configuration
 │   ├── config/             # Symfony config files
 │   └── ...
-├── mysql/                  # MySQL SSL certificate directory
+├── certs/                  # MySQL SSL certificate directory
 │   ├── server-key.pem      # MySQL server private key
 │   ├── server-cert.pem     # MySQL server certificate
 │   ├── ca-cert.pem         # Certificate Authority (CA) certificate
