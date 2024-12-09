@@ -27,8 +27,8 @@ Before running the project, ensure that you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-  git clone https://github.com/your_username/symfony-mysql-ssl-docker.git
-  cd symfony-mysql-ssl-docker
+  git clone https://github.com/lacatoire/docker-compose-symfony-ssl-mysql
+  cd docker-compose-symfony-ssl-mysql
 ```
 
 ### 2. Generate SSL certificates for MySQL
