@@ -1,15 +1,21 @@
+
 # ⚡ Symfony Docker-Compose with SSL (MySQL & PostgreSQL) 🐳🔒
 
 This repository demonstrates a project setup using `Docker Compose`, `Symfony`, and secure database interactions with both `MySQL` and `PostgreSQL`, leveraging SSL/TLS connection support.
-## Prerequisites
+
+---
+
+## 🔧 **Prerequisites**
 
 Before running the project, ensure that you have the following installed:
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
+- [🐳 Docker](https://www.docker.com/)
+- [📦 Docker Compose](https://docs.docker.com/compose/)
 
-## Project Structure
+---
 
-```directory
+## 📂 **Project Structure**
+
+```plaintext
 .
 ├── docker-compose.mysql.yml    # Docker Compose configuration for MySQL
 ├── docker-compose.postgres.yml # Docker Compose configuration for PostgreSQL
@@ -24,17 +30,23 @@ Before running the project, ensure that you have the following installed:
 └── README.md                   # Project documentation
 ```
 
-## ⚙️ Getting Started
-### 1. Clone the repository
+---
+
+## ⚙️ **Getting Started**
+
+### 1️⃣ **Clone the repository**
 
 ```bash
-  git clone https://github.com/lacatoire/docker-compose-symfony-ssl
-  cd docker-compose-symfony-ssl
-```
+git clone https://github.com/lacatoire/docker-compose-symfony-ssl
+cd docker-compose-symfony-ssl
+```  
 
-### 2. Generate SSL certificates for MySQL
+---
 
-If you don't already have SSL certificates, you can generate self-signed certificates using OpenSSL. Run the following commands to generate your certificates:
+### 2️⃣ **Generate SSL certificates**
+
+#### 🐬 **For MySQL**
+Follow these steps to generate self-signed SSL certificates for MySQL:
 
 ```bash
 # Build Docker image
@@ -65,31 +77,39 @@ openssl req -new -key server-key.pem -out server-cert.csr
 openssl x509 -req -in server-cert.csr -CA ca-cert.pem -CAkey server-key.pem -CAcreateserial -out server-cert.pem -days 3650
 ```
 
-### 3. Configure the environment
+#### 🐘 **For PostgreSQL**
+Same process applies, but store the files in the `certs/postgres/` directory.
 
-Edit the .env file in the Symfony project directory to set the database connection details `SSL Mode`
+---
 
-```bash
+### 3️⃣ **Configure the environment**
+
+Update the `.env` file in the Symfony project:
+
+```dotenv
+# For MySQL
 DATABASE_URL="mysql://db_user:db_password@database_app:3306/db_name?sslmode=required"
-DATABASE_URL="postgresql://db_user:db_password@database_app:5432/db_name"
 
+# For PostgreSQL
+DATABASE_URL="postgresql://db_user:db_password@database_app:5432/db_name"
 ```
-### 4. Set up the Docker environment
+
+---
+
+### 4️⃣ **Set up the Docker environment**
 
 Run the following command to build and start the containers:
 
 ```bash
 docker-compose up --build
-```
+```  
+
 This will:
-
-    Start a MySQL/PostGre container with SSL enabled.
-    Start a Symfony application container.
-
-### 5. Configure Doctrine
+- Start a MySQL/PostgreSQL container with SSL enabled.
+- Start a Symfony application container.
+### Configure Doctrine
 
 In the config/packages/doctrine.yaml file, add the SSL options for MySQL:
-
 ```yaml
 
 doctrine:
@@ -134,40 +154,41 @@ POSTGRES_SSL_CERT=/certs/server-cert.pem
 POSTGRES_SSL_CA=/certs/ca-cert.pem
 ```
 
-### 6. Access the Symfony application
+### 5️⃣ **Test your setup**
 
-After the containers have been started, tests your ssl connection on mysql with
-
+#### ✅ **For MySQL**
 ```bash
-docker exec -it database_app mysql -u db_user -p --ssl-ca=/etc/certs/ca-cert.pem --ssl-cert=/etc/certs/server-cert.pem --ssl-key=/etc/certs/server-key.pem db_name
-```
+docker exec -it database_app mysql -u db_user -p   --ssl-ca=/etc/certs/ca-cert.pem   --ssl-cert=/etc/certs/server-cert.pem   --ssl-key=/etc/certs/server-key.pem db_name
+```  
 
+#### ✅ **For PostgreSQL**
 ```bash
-docker exec -it database_app psql -U db_user -d db_name \
-    --set=sslrootcert=/etc/certs/ca-cert.pem \
-    --set=sslcert=/etc/certs/server-cert.pem \
-    --set=sslkey=/etc/certs/server-key.pem
-```
-Run this query inside psql
-```postgresql
+docker exec -it database_app psql -U db_user -d db_name   --set=sslrootcert=/etc/certs/ca-cert.pem   --set=sslcert=/etc/certs/server-cert.pem   --set=sslkey=/etc/certs/server-key.pem
+```  
+Run the following query to validate SSL:
+```sql
 SELECT ssl_is_used FROM pg_stat_ssl WHERE pid = pg_backend_pid();
---If the output is true, the connection is secured via SSL.
+-- Output: 'true' if SSL is enabled
 ```
 
-And then test from your symfony app:
+#### ✅ **From Symfony**
 ```bash
 docker exec -it php_app php bin/console doctrine:schema:update --dump-sql --complete
 ```
 
-### Troubleshooting
-If you encounter connection issues with MySQL SSL, ensure the following:
+---
 
-    The SSL certificates are correctly generated and placed in the certs directory.
-    The CN of the MySQL server certificate matches the hostname database_app as expected.
-    Ensure Docker Compose is using the correct volumes and environment settings.
+## 🛠 **Troubleshooting**
 
-### License
+1. Ensure the SSL certificates are correctly generated and placed in the `certs/` directory.
+2. For PostgreSQL, ensure the `sslmode` is set to `verify-ca` (or `verify-full` for production).
+3. Check the CN of your server certificate matches `database_app`.
+
+---
+
+## 📜 **License**
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-Interested in training with our team? [Contact us](https://www.itefficience.com/contact)!
+Interested in training with our team? [Contact us!](https://www.itefficience.com/contact)  
+
