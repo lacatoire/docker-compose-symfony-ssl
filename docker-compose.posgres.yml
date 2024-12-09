@@ -1,0 +1,38 @@
+services:
+  php_app:
+    image: php:8.3-fpm-alpine
+    container_name: php_app
+    volumes:
+      - .:/app
+    networks:
+      - fastcgi
+      - db
+
+  database_app:
+    image: postgres:latest
+    container_name: database_app
+    networks:
+      - db
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: db_name
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - certs:/etc/certs
+    ports:
+      - "5432:5432"
+    command: >
+      -c ssl=on
+      -c ssl_cert_file=/etc/certs/server-cert.pem
+      -c ssl_key_file=/etc/certs/server-key.pem
+      -c ssl_ca_file=/etc/certs/ca-cert.pem
+
+volumes:
+  db_data:
+
+networks:
+  fastcgi:
+  db:

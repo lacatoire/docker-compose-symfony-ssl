@@ -1,6 +1,6 @@
-# ⚡ Symfony MySQL Docker-Compose with SSL 🐳🔒
+# ⚡ Symfony Docker-Compose with SSL (MySQL & PostgreSQL) 🐳🔒
 
-This repository demonstrates a project setup using `Docker Compose`, `Symfony`, and `MySQL` with SSL/TLS connection support for secure database interactions.
+This repository demonstrates a project setup using `Docker Compose`, `Symfony`, and secure database interactions with both `MySQL` and `PostgreSQL`, leveraging SSL/TLS connection support.
 ## Prerequisites
 
 Before running the project, ensure that you have the following installed:
@@ -11,24 +11,25 @@ Before running the project, ensure that you have the following installed:
 
 ```directory
 .
-├── docker-compose.yml      # Docker Compose configuration
-├── app/                    # Symfony project directory
-│   ├── .env                # Symfony environment configuration
-│   ├── config/             # Symfony config files
+├── docker-compose.mysql.yml    # Docker Compose configuration for MySQL
+├── docker-compose.postgres.yml # Docker Compose configuration for PostgreSQL
+├── app/                        # Symfony project directory
+│   ├── .env                    # Symfony environment configuration
+│   ├── config/                 # Symfony config files
 │   └── ...
-├── certs/                  # MySQL SSL certificate directory
-│   ├── server-key.pem      # MySQL server private key
-│   ├── server-cert.pem     # MySQL server certificate
-│   ├── ca-cert.pem         # Certificate Authority (CA) certificate
-└── README.md               # Project documentation
+├── certs/                      # MySQL SSL certificate directory
+│   ├── server-key.pem          # MySQL server private key
+│   ├── server-cert.pem         # MySQL server certificate
+│   ├── ca-cert.pem             # Certificate Authority (CA) certificate
+└── README.md                   # Project documentation
 ```
 
 ## ⚙️ Getting Started
 ### 1. Clone the repository
 
 ```bash
-  git clone https://github.com/lacatoire/docker-compose-symfony-ssl-mysql
-  cd docker-compose-symfony-ssl-mysql
+  git clone https://github.com/lacatoire/docker-compose-symfony-ssl
+  cd docker-compose-symfony-ssl
 ```
 
 ### 2. Generate SSL certificates for MySQL
@@ -70,6 +71,8 @@ Edit the .env file in the Symfony project directory to set the database connecti
 
 ```bash
 DATABASE_URL="mysql://db_user:db_password@database_app:3306/db_name?sslmode=required"
+DATABASE_URL="postgresql://db_user:db_password@database_app:5432/db_name"
+
 ```
 ### 4. Set up the Docker environment
 
@@ -80,7 +83,7 @@ docker-compose up --build
 ```
 This will:
 
-    Start a MySQL container with SSL enabled.
+    Start a MySQL/PostGre container with SSL enabled.
     Start a Symfony application container.
 
 ### 5. Configure Doctrine
@@ -112,7 +115,24 @@ MYSQL_SSL_KEY=/certs/server-key.pem
 MYSQL_SSL_CERT=/certs/server-cert.pem
 MYSQL_SSL_CA=/certs/ca-cert.pem
 ```
-
+For PostGres
+```yaml
+doctrine:
+    dbal:
+      driver: 'pdo_pgsql'
+      url: '%env(DATABASE_URL)%'
+      server_version: '12.2'
+      sslmode: 'verify-ca' # 'verify-full' for production
+      sslrootcert: '%env(POSTGRES_SSL_CA)%'
+      sslcert: '%env(POSTGRES_SSL_CERT)%'
+      sslkey: '%env(POSTGRES_SSL_KEY)%'
+```
+You will add these variables in your .env
+```dotenv
+POSTGRES_SSL_KEY=/certs/server-key.pem
+POSTGRES_SSL_CERT=/certs/server-cert.pem
+POSTGRES_SSL_CA=/certs/ca-cert.pem
+```
 
 ### 6. Access the Symfony application
 
@@ -120,6 +140,18 @@ After the containers have been started, tests your ssl connection on mysql with
 
 ```bash
 docker exec -it database_app mysql -u db_user -p --ssl-ca=/etc/certs/ca-cert.pem --ssl-cert=/etc/certs/server-cert.pem --ssl-key=/etc/certs/server-key.pem db_name
+```
+
+```bash
+docker exec -it database_app psql -U db_user -d db_name \
+    --set=sslrootcert=/etc/certs/ca-cert.pem \
+    --set=sslcert=/etc/certs/server-cert.pem \
+    --set=sslkey=/etc/certs/server-key.pem
+```
+Run this query inside psql
+```postgresql
+SELECT ssl_is_used FROM pg_stat_ssl WHERE pid = pg_backend_pid();
+--If the output is true, the connection is secured via SSL.
 ```
 
 And then test from your symfony app:
