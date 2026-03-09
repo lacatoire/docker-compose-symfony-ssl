@@ -141,7 +141,7 @@ doctrine:
     dbal:
       driver: 'pdo_pgsql'
       url: '%env(DATABASE_URL)%'
-      server_version: '12.2'
+      server_version: '17'
       sslmode: 'verify-ca' # 'verify-full' for production
       sslrootcert: '%env(POSTGRES_SSL_CA)%'
       sslcert: '%env(POSTGRES_SSL_CERT)%'
