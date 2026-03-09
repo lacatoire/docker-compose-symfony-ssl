@@ -21,14 +21,18 @@ services:
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/postgresql/data
-      - certs:/etc/certs
+      - ./certs:/etc/certs-src:ro
     ports:
       - "5432:5432"
-    command: >
-      -c ssl=on
-      -c ssl_cert_file=/etc/certs/server-cert.pem
-      -c ssl_key_file=/etc/certs/server-key.pem
-      -c ssl_ca_file=/etc/certs/ca-cert.pem
+    entrypoint:
+      - bash
+      - -c
+      - |
+        mkdir -p /etc/certs &&
+        cp /etc/certs-src/* /etc/certs/ &&
+        chown postgres:postgres /etc/certs/* &&
+        chmod 600 /etc/certs/server-key.pem &&
+        exec docker-entrypoint.sh postgres -c ssl=on -c ssl_cert_file=/etc/certs/server-cert.pem -c ssl_key_file=/etc/certs/server-key.pem -c ssl_ca_file=/etc/certs/ca-cert.pem
 
 volumes:
   db_data:

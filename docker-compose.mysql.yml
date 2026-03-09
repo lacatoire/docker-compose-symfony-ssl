@@ -21,7 +21,7 @@ services:
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/mysql
-      - certs:/etc/certs
+      - ./certs:/etc/certs
     ports:
       - "3306:3306"
     command: [ "mysqld",
