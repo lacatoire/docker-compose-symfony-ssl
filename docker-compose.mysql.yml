@@ -9,7 +9,7 @@ services:
       - db
 
   database_app:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: database_app
     networks:
       - db
@@ -18,6 +18,7 @@ services:
       MYSQL_DATABASE: db_name
       MYSQL_USER: db_user
       MYSQL_PASSWORD: db_password
+    restart: unless-stopped
     volumes:
       - db_data:/var/lib/mysql
       - certs:/etc/certs
@@ -31,7 +32,7 @@ services:
                "--ssl-ca=/etc/certs/ca-cert.pem",
                "--ssl-cert=/etc/certs/server-cert.pem",
                "--ssl-key=/etc/certs/server-key.pem",
-               "--default_authentication_plugin=mysql_native_password" ]
+               "--authentication_policy=caching_sha2_password" ]
 
 volumes:
   db_data:

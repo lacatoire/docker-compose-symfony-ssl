@@ -1,6 +1,6 @@
 services:
   php_app:
-    image: php:8.3-fpm-alpine
+    image: php:8.4-fpm-alpine
     container_name: php_app
     volumes:
       - .:/app
@@ -9,7 +9,7 @@ services:
       - db
 
   database_app:
-    image: postgres:latest
+    image: postgres:17
     container_name: database_app
     networks:
       - db
